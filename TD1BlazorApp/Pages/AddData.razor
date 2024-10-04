@@ -1,0 +1,38 @@
+﻿@page "/adddata"
+@inject IService<Produit> produitService
+
+<PageTitle>Add Data</PageTitle>
+
+<h1>Ajouter produits</h1>
+
+@* <EditForm Model="Model" OnSubmit="Submit" FormName="PostProduit">
+    <div>
+        <label>
+            Identifier:
+            <InputText @bind-Value="Model!.Id" />
+        </label>
+    </div>
+    <div>
+        <button type="submit">Submit</button>
+    </div>
+</EditForm>
+
+@code {
+
+    private IList<Produit> produits = new List<Produit>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        produits = await produitService.GetItemsAsync();
+    }
+
+    [SupplyParameterFromForm]
+    private Produit? Model { get; set; }
+
+    protected override void OnInitialized() => Model ??= new();
+
+    private void Submit()
+    {
+        Logger.LogInformation("Id = {Id}", Model?.Id);
+    }
+} *@

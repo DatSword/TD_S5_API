@@ -47,12 +47,12 @@ namespace TD1.Models
         [ForeignKey("idmarque")]
         [InverseProperty(nameof(Marque.Produits))]
 
-        public virtual Marque IdmarqueNavigation { get; set; }
+        public virtual Marque? IdmarqueNavigation { get; set; }
 
         [ForeignKey("idtypeproduit")]
         [InverseProperty(nameof(TypeProduit.Produits))]
 
-        public virtual TypeProduit IdtypeProduitNavigation { get; set; }
+        public virtual TypeProduit? IdtypeProduitNavigation { get; set; }
 
     }
 }

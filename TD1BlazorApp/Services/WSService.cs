@@ -1,13 +1,7 @@
-﻿using TD1BlazorApp.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
+﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text;
-using System.Threading.Tasks;
-using TD1BlazorApp.Services;
+
 
 namespace TD1BlazorApp.Services
 {
@@ -33,6 +27,20 @@ namespace TD1BlazorApp.Services
             catch (Exception)
             {
                 return null;
+            }
+        }
+
+        public async Task<HttpResponseMessage> PostItemAsync(T item)
+        {
+            try
+            {
+                var response = await httpClient.PostAsJsonAsync(endpoint, item);
+
+                return response;
+            }
+            catch (Exception)
+            {
+                return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
         }
     }

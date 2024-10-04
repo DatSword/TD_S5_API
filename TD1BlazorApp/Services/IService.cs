@@ -10,5 +10,7 @@ namespace TD1BlazorApp.Services
     public interface IService<T>
     {
         Task<List<T>> GetItemsAsync();
+
+        Task<HttpResponseMessage> PostItemAsync(T item);
     }
 }

@@ -1,9 +1,9 @@
-﻿@page "/weather"
+﻿@page "/fetchdata"
 @inject IService<Produit> produitService
 
-<PageTitle>Weather</PageTitle>
+<PageTitle>Fetch Data</PageTitle>
 
-<h1>Weather</h1>
+<h1>Visualisation des produits</h1>
 
 <p>This component demonstrates fetching data from the server.</p>
 
@@ -17,6 +17,9 @@ else
         <thead>
             <tr>
                 <th>Nom</th>
+                <th>Description</th>
+                <th>Marque</th>
+                <th>Type de Produit</th>
             </tr>
         </thead>
         <tbody>
@@ -24,7 +27,9 @@ else
             {
                 <tr>
                     <td>@produit.NomProduit</td>
-
+                    <td>@produit.Description</td>
+                    <td>@produit.IdMarque</td>
+                    <td>@produit.IdTypeProduit</td>
                 </tr>
             }
         </tbody>
@@ -32,23 +37,6 @@ else
 }
 
 @code {
-    /*private WeatherForecast[]? forecasts;
-
-    protected override async Task OnInitializedAsync()
-        {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
-    }
-
-    public class WeatherForecast
-        {
-        public DateOnly Date { get; set; }
-
-        public int TemperatureC { get; set; }
-
-        public string? Summary { get; set; }
-
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-    }*/
 
     private IList<Produit> produits = new List<Produit>();
 
@@ -61,4 +49,5 @@ else
     {
         return await http.GetFromJsonAsync<Produit[]>("produits") ?? [];
     }*/
+
 }

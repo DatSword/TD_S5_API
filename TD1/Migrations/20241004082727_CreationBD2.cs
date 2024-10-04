@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace TD1.Migrations
 {
     /// <inheritdoc />
-    public partial class CreationBD : Migration
+    public partial class CreationBD2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -51,8 +51,8 @@ namespace TD1.Migrations
                     stockreel = table.Column<int>(type: "integer", nullable: false),
                     stockmin = table.Column<int>(type: "integer", nullable: false),
                     stockmax = table.Column<int>(type: "integer", nullable: false),
-                    idmarque1 = table.Column<int>(type: "integer", nullable: false),
-                    idtypeproduit1 = table.Column<int>(type: "integer", nullable: false)
+                    idmarque1 = table.Column<int>(type: "integer", nullable: true),
+                    idtypeproduit1 = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
