@@ -19,6 +19,8 @@ namespace TD1BlazorApp
             builder.Services.AddScoped<IService<Produit>>(provider =>
                 new WSService<Produit>(provider.GetRequiredService<HttpClient>(), "Produits"));
 
+            builder.Services.AddBlazorBootstrap();
+
             await builder.Build().RunAsync();
         }
     }
