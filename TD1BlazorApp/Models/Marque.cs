@@ -1,0 +1,20 @@
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace TD1BlazorApp.Models
+{
+    [Table("marque")]
+    public partial class Marque
+    {
+        [Key]
+        [Column("idmarque")]
+        public int IdMarque { get; set; }
+
+        [Column("nommarque")]
+        public string? NomMarque { get; set; }
+
+        [InverseProperty(nameof(Produit.IdmarqueNavigation))]
+        public virtual ICollection<Produit> Produits { get; set; } = new List<Produit>();
+    }
+}
