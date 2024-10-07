@@ -16,11 +16,9 @@ internal sealed partial class ProduitViewModel : ObservableObject
     public ProduitViewModel(IService<Produit> service)
     {
         _service = service;
-        // Chargement des données via un RelayCommand
         LoadProduitsCommand = new AsyncRelayCommand(GetDataOnLoadAsync);
     }
 
-    // Commande pour charger les produits
     public IAsyncRelayCommand LoadProduitsCommand { get; }
 
     public async Task GetDataOnLoadAsync()

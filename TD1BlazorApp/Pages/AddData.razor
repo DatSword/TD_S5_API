@@ -1,5 +1,7 @@
 ﻿@page "/adddata"
 @inject IService<Produit> produitService
+@inject IService<Marque> marqueService
+@inject IService<TypeProduit> typeService
 
 <PageTitle>Add Data</PageTitle>
 
@@ -43,6 +45,36 @@
 
 </EditForm>
 
+<h1>Ajouter des marques</h1>
+
+<EditForm Model="nouvelleMarque" OnValidSubmit="AjouterMarque">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="nom" class="form-label">Nom de la marque</label>
+        <InputText id="nom" class="form-control" @bind-Value="nouvelleMarque.NomMarque" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Ajouter Marque</button>
+
+</EditForm>
+
+<h1>Ajouter des types de produits</h1>
+
+<EditForm Model="nouveauType" OnValidSubmit="AjouterTypeProduit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="nom" class="form-label">Nom du type</label>
+        <InputText id="nom" class="form-control" @bind-Value="nouveauType.NomTypeProduit" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Ajouter TypeProduit</button>
+
+</EditForm>
+
 @code {
     private Produit nouveauProduit = new Produit();
 
@@ -53,6 +85,24 @@
 
         // Réinitialiser le formulaire
         nouveauProduit = new Produit();
+    }
+
+    private Marque nouvelleMarque = new Marque();
+
+    private async Task AjouterMarque()
+    {
+        await marqueService.PostItemAsync(nouvelleMarque);
+
+        nouvelleMarque = new Marque();
+    }
+
+    private TypeProduit nouveauType = new TypeProduit();
+
+    private async Task AjouterTypeProduit()
+    {
+        await typeService.PostItemAsync(nouveauType);
+
+        nouveauType = new TypeProduit();
     }
     
 }
