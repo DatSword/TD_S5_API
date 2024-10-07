@@ -1,0 +1,48 @@
+﻿@page "/mvvmdata"
+@using TD1BlazorApp.ViewModels
+@inject ProduitViewModel ViewModel
+
+<PageTitle>Fetch MVVM Data</PageTitle>
+
+<h1>Fetch MVVM Data</h1>
+
+<p>This component demonstrates fetching data from a service.</p>
+
+@if (ViewModel.IsLoading)
+{
+    <p>
+        <em>Loading...</em>
+    </p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Description</th>
+                <th>Marque</th>
+                <th>Type de Produit</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var produit in ViewModel.Produits)
+            {
+                <tr>
+                    <td>@produit.NomProduit</td>
+                    <td>@produit.Description</td>
+                    <td>@produit.IdMarque</td>
+                    <td>@produit.IdTypeProduit</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await ViewModel.GetDataOnLoadAsync();
+    }
+}
+

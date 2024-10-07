@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using TD1BlazorApp.Models;
 using TD1BlazorApp.Services;
+using TD1BlazorApp.ViewModels;
 
 namespace TD1BlazorApp
 {
@@ -18,6 +19,12 @@ namespace TD1BlazorApp
 
             builder.Services.AddScoped<IService<Produit>>(provider =>
                 new WSService<Produit>(provider.GetRequiredService<HttpClient>(), "Produits"));
+            builder.Services.AddScoped<IService<Marque>>(provider =>
+                new WSService<Marque>(provider.GetRequiredService<HttpClient>(), "Marques"));
+            builder.Services.AddScoped<IService<TypeProduit>>(provider =>
+                new WSService<TypeProduit>(provider.GetRequiredService<HttpClient>(), "TypeProduits"));
+
+            builder.Services.AddScoped<ProduitViewModel>();
 
             builder.Services.AddBlazorBootstrap();
 
