@@ -1,9 +1,7 @@
-﻿namespace TD1BlazorApp.Models.DTO
+﻿namespace TD1.Models.DTO
 {
     public class MarqueDto
     {
-        public int Id { get; set; }
-        public string? Nom { get; set; }
-        public int NbProduits { get; set; }
+        public string? NomMarque { get; set; }
     }
 }

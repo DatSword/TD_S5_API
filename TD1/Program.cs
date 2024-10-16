@@ -12,6 +12,7 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<IDataRepository<Marque>, MarqueManager>();
 builder.Services.AddScoped<IDataRepository<Produit>, ProduitManager>();
 builder.Services.AddScoped<IDataRepository<TypeProduit>, TypeProduitManager>();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

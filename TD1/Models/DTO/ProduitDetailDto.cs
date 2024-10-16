@@ -1,4 +1,4 @@
-﻿namespace TD1BlazorApp.Models.DTO
+﻿namespace TD1.Models.DTO
 {
     public class ProduitDetailDto
     {

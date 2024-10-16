@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TD1.Models;
+using TD1.Models.DTO;
 using TD1.Models.Repository;
 
 namespace TD1.Controllers
@@ -17,17 +19,24 @@ namespace TD1.Controllers
         //private readonly ProduitsDBContext _context;
 
         private readonly IDataRepository<Marque> dataRepository;
+        private readonly IMapper _mapper;
 
-        public MarquesController(IDataRepository<Marque> dataRepo)
+        public MarquesController(IDataRepository<Marque> dataRepo, IMapper mapper)
         {
             dataRepository = dataRepo;
+            _mapper = mapper;
         }
 
         // GET: api/Marques
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Marque>>> GetMarques()
         {
-            return await dataRepository.GetAllAsync();
+            var marques = await dataRepository.GetAllAsync();
+
+            // Mapper les entités Marque en DTO
+            var marqueDtos = _mapper.Map<IEnumerable<MarqueDto>>(marques);
+
+            return Ok(marqueDtos);
         }
 
         // GET: api/Marques/5
@@ -80,13 +89,16 @@ namespace TD1.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Marque>> PostMarque(Marque marque)
+        public async Task<ActionResult<Marque>> PostMarque(MarqueDto marqueDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
+            //await dataRepository.AddAsync(marque);   
+
+            var marque = _mapper.Map<Marque>(marqueDto);
             await dataRepository.AddAsync(marque);
 
             return CreatedAtAction("GetById", new { id = marque.IdMarque }, marque);

@@ -3,7 +3,7 @@
     public class MarqueDetailDto
     {
         public int Id { get; set; }
-        public string? Nom { get; set; }
-        public string? Type { get; set; }
+        public string? NomMarque { get; set; }
+        public int NbProduits { get; set; }
     }
 }
