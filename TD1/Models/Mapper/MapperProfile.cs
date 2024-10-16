@@ -7,9 +7,10 @@ namespace TD1.Models.Mapper
     {
         public MapperProfile()
         {
-            CreateMap<Marque, MarqueDto>();
-
-            CreateMap<MarqueDto, Marque>();
+            CreateMap<Marque, MarqueDto>()
+                .ForMember(mDto => mDto.IdMarque, act => act.MapFrom(m => m.IdMarque))
+                .ForMember(mDto => mDto.NomMarque, act => act.MapFrom(m => m.NomMarque))
+                .ReverseMap();
         }
     }
 }
