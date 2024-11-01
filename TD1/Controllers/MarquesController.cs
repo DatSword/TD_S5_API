@@ -59,7 +59,7 @@ namespace TD1.Controllers
         }
 
         // PUT: api/Marques/{id}
-        /*[HttpPut("{id}")]
+        [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -80,7 +80,7 @@ namespace TD1.Controllers
             await dataRepository.UpdateAsync(marqueToUpdate.Value, updatedMarque);
 
             return NoContent();
-        }*/
+        }
 
         // POST: api/Marques
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
