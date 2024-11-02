@@ -1,11 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TD1.Controllers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using TD1.Models;
 using Microsoft.EntityFrameworkCore;
 using TD1.Models.Repository;
@@ -19,19 +12,36 @@ namespace TD1.Controllers.Tests
     [TestClass()]
     public class MarquesControllerTests
     {
-        private MarquesController controller;
+        
         private ProduitsDBContext context;
         private IDataRepository<Marque> dataRepository;
-        private readonly IMapper mapper;
+        private IMapper mapper;
+        private MarquesController controller;
+
+        private Mock<IDataRepository<Marque>> mockRepository;
+        private Mock<IMapper> mockMapper;
+        private MarquesController mockController;
 
         [TestInitialize]
         public void InitTest()
         {
             // Arrange
+
+            //Pour les tests classiques
             var builder = new DbContextOptionsBuilder<ProduitsDBContext>().UseNpgsql("Server=localhost;port=5432;Database=ProduitsDB; uid=postgres;password=postgres;");
             context = new ProduitsDBContext(builder.Options);
             dataRepository = new MarqueManager(context);
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<Marque, MarqueDto>();
+            });
+            mapper = config.CreateMapper();
             controller = new MarquesController(dataRepository, mapper);
+
+            //Pour les tests moqs
+            mockRepository = new Mock<IDataRepository<Marque>>();
+            mockMapper = new Mock<IMapper>();
+            mockController = new MarquesController(mockRepository.Object, mockMapper.Object);
         }
 
         [TestMethod()]
@@ -39,11 +49,14 @@ namespace TD1.Controllers.Tests
         {
             //Arrange
             List<Marque> lesMarques = context.Marques.ToList();
+            List<MarqueDto> expectedMarqueDtos = lesMarques.Select(m => mapper.Map<MarqueDto>(m)).ToList();
             // Act
             var res = controller.GetMarques().Result;
+            var okResult = res.Result as OkObjectResult;
+            var actualMarqueDtos = okResult.Value as IEnumerable<MarqueDto>;
             // Assert
-            Assert.IsNotNull(res);
-            CollectionAssert.AreEqual(lesMarques, res.Value.ToList(), "Les listes de marques ne sont pas identiques");
+            Assert.IsNotNull(actualMarqueDtos, "La valeur de la réponse est null.");
+            CollectionAssert.AreEqual(expectedMarqueDtos, actualMarqueDtos.ToList(), "Les listes de marques ne sont pas identiques");
         }
 
         [TestMethod]
@@ -61,14 +74,12 @@ namespace TD1.Controllers.Tests
                 IdMarque = 1,
                 NomMarque = "Loréal",
             };
-            var mockRepository = new Mock<IDataRepository<Marque>>();
-            var mockMapper = new Mock<IMapper>();
+
             mockRepository.Setup(x => x.GetByIdAsync(1)).ReturnsAsync(marque);
             mockMapper.Setup(m => m.Map<MarqueDto>(marque)).Returns(expectedMarqueDto);
 
-            var marquesController = new MarquesController(mockRepository.Object, mockMapper.Object);
             // Act
-            var actionResult = marquesController.GetMarque(1).Result;
+            var actionResult = mockController.GetMarque(1).Result;
             // Assert
             Assert.IsNotNull(actionResult);
 
@@ -81,9 +92,6 @@ namespace TD1.Controllers.Tests
         public void PostMarque_ModelValidated_CreationOK_AvecMoq()
         {
             // Arrange
-            var mockRepository = new Mock<IDataRepository<Marque>>();
-            var mockMapper = new Mock<IMapper>();
-            var marquesController = new MarquesController(mockRepository.Object, mockMapper.Object);
             MarqueDto marqueDto = new MarqueDto
             {
                 IdMarque = 666,
@@ -97,13 +105,11 @@ namespace TD1.Controllers.Tests
             };
 
             mockMapper.Setup(m => m.Map<Marque>(marqueDto)).Returns(expectedMarque);
-
             mockRepository.Setup(r => r.AddAsync(It.IsAny<Marque>())).Returns(Task.FromResult(expectedMarque));
-
             mockMapper.Setup(m => m.Map<MarqueDto>(expectedMarque)).Returns(marqueDto);
 
             // Act
-            var actionResult = marquesController.PostMarque(marqueDto).Result;
+            var actionResult = mockController.PostMarque(marqueDto).Result;
             // Assert
             Assert.IsInstanceOfType(actionResult, typeof(ActionResult<MarqueDto>), "Pas un ActionResult<>");
             Assert.IsInstanceOfType(actionResult.Result, typeof(CreatedAtActionResult), "Pas un CreatedAtActionResult");
@@ -113,8 +119,7 @@ namespace TD1.Controllers.Tests
             Assert.IsInstanceOfType(result.Value, typeof(MarqueDto), "Pas une marque");
 
             var createdMarqueDto = result.Value as MarqueDto;
-            Assert.AreEqual(marqueDto.IdMarque, createdMarqueDto.IdMarque, "ID de la marque incorrect");
-            Assert.AreEqual(marqueDto.NomMarque, createdMarqueDto.NomMarque, "Nom de la marque incorrect");
+            Assert.AreEqual(marqueDto, createdMarqueDto, "marques non identiques");
         }
 
         [TestMethod]
@@ -131,17 +136,19 @@ namespace TD1.Controllers.Tests
                 IdMarque = 667,
                 NomMarque = "Intermarché",
             };
-            var mockRepository = new Mock<IDataRepository<Marque>>();
-            var mockMapper = new Mock<IMapper>();
+
             mockRepository.Setup(x => x.GetByIdAsync(667)).ReturnsAsync(marqueToEdit);
-            
-            var marquesController = new MarquesController(mockRepository.Object, mockMapper.Object);
+            mockRepository.Setup(r => r.UpdateAsync(marqueToEdit, It.IsAny<Marque>())).Returns(Task.FromResult(marqueEdited));
 
             // Act
-            var actionResult = marquesController.PutMarque(667, marqueEdited).Result;
+            var actionResult = mockController.PutMarque(667, marqueEdited).Result;
 
             // Assert
-            Assert.IsInstanceOfType(actionResult, typeof(NoContentResult), "Pas un NoContentResult");
+            Assert.IsInstanceOfType(actionResult, typeof(ActionResult<MarqueDto>), "Pas un ActionResult<>");
+
+            var okResult = actionResult.Result as OkObjectResult;
+            Assert.IsNotNull(okResult.Value);
+            Assert.AreEqual(marqueEdited, okResult.Value as MarqueDto);
         }
 
         [TestMethod]
@@ -155,12 +162,9 @@ namespace TD1.Controllers.Tests
                 NomMarque = "QBINDUSTRIES",
             };
 
-            var mockRepository = new Mock<IDataRepository<Marque>>();
             mockRepository.Setup(x => x.GetByIdAsync(334).Result).Returns(marque);
-            var mockMapper = new Mock<IMapper>();
-            var marquesController = new MarquesController(mockRepository.Object, mockMapper.Object);
             // Act
-            var actionResult = marquesController.DeleteMarque(334).Result;
+            var actionResult = mockController.DeleteMarque(334).Result;
             // Assert
             Assert.IsInstanceOfType(actionResult, typeof(NoContentResult), "Pas un NoContentResult"); // Test du type de retour
         }

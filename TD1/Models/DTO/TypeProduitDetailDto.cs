@@ -2,8 +2,8 @@
 {
     public class TypeProduitDetailDto
     {
-        public int Id { get; set; }
-        public string? Nom { get; set; }
+        public int IdTypeProduit { get; set; }
+        public string? NomTypeProduit { get; set; }
         public int Produits { get; set; }
     }
 }

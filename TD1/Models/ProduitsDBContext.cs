@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.Intrinsics.X86;
-using System.Security.Cryptography;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace TD1.Models
 {

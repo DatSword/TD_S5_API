@@ -58,12 +58,33 @@ namespace TD1.Controllers
             return Ok(marqueDto);
         }
 
+        // POST: api/Marques
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<MarqueDto>> PostMarque(MarqueDto marqueDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var marque = _mapper.Map<Marque>(marqueDto);
+
+            await dataRepository.AddAsync(marque);
+
+            var marqueDtoResult = _mapper.Map<MarqueDto>(marque);
+
+            return CreatedAtAction("GetById", new { id = marque.IdMarque }, marqueDtoResult);
+        }
+
         // PUT: api/Marques/{id}
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> PutMarque(int id, MarqueDto marqueDto)
+        public async Task<ActionResult<MarqueDto>> PutMarque(int id, MarqueDto marqueDto)
         {
             if (id != marqueDto.IdMarque)
             {
@@ -79,30 +100,8 @@ namespace TD1.Controllers
 
             await dataRepository.UpdateAsync(marqueToUpdate.Value, updatedMarque);
 
-            return NoContent();
-        }
-
-        // POST: api/Marques
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<MarqueDto>> PostMarque(MarqueDto marqueDto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            //await dataRepository.AddAsync(marque);   
-
-            var marque = _mapper.Map<Marque>(marqueDto);
-
-            await dataRepository.AddAsync(marque);
-
-            var marqueDtoResult = _mapper.Map<MarqueDto>(marque);
-
-            return CreatedAtAction("GetById", new { id = marque.IdMarque }, marqueDtoResult);
+            var updatedMarqueDto = _mapper.Map<MarqueDto>(updatedMarque);
+            return Ok(updatedMarqueDto);
         }
 
         // DELETE: api/Marques/5
