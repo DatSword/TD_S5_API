@@ -107,6 +107,7 @@ namespace TD1.Controllers.Tests
             mockMapper.Setup(m => m.Map<Marque>(marqueDto)).Returns(expectedMarque);
             mockRepository.Setup(r => r.AddAsync(It.IsAny<Marque>())).Returns(Task.FromResult(expectedMarque));
             mockMapper.Setup(m => m.Map<MarqueDto>(expectedMarque)).Returns(marqueDto);
+            
 
             // Act
             var actionResult = mockController.PostMarque(marqueDto).Result;
@@ -131,7 +132,12 @@ namespace TD1.Controllers.Tests
                 NomMarque = "Géant",
 
             };
-            MarqueDto marqueEdited = new MarqueDto
+            MarqueDto marqueEditedDto = new MarqueDto
+            {
+                IdMarque = 667,
+                NomMarque = "Intermarché",
+            };
+            Marque marqueEdited = new Marque
             {
                 IdMarque = 667,
                 NomMarque = "Intermarché",
@@ -139,16 +145,18 @@ namespace TD1.Controllers.Tests
 
             mockRepository.Setup(x => x.GetByIdAsync(667)).ReturnsAsync(marqueToEdit);
             mockRepository.Setup(r => r.UpdateAsync(marqueToEdit, It.IsAny<Marque>())).Returns(Task.FromResult(marqueEdited));
+            mockMapper.Setup(m => m.Map<Marque>(marqueEdited)).Returns(marqueEdited);
+            mockMapper.Setup(m => m.Map<MarqueDto>(It.IsAny<Marque>())).Returns(marqueEditedDto);
 
             // Act
-            var actionResult = mockController.PutMarque(667, marqueEdited).Result;
+            var actionResult = mockController.PutMarque(667, marqueEditedDto).Result;
 
             // Assert
             Assert.IsInstanceOfType(actionResult, typeof(ActionResult<MarqueDto>), "Pas un ActionResult<>");
 
             var okResult = actionResult.Result as OkObjectResult;
             Assert.IsNotNull(okResult.Value);
-            Assert.AreEqual(marqueEdited, okResult.Value as MarqueDto);
+            Assert.AreEqual(marqueEditedDto, okResult.Value as MarqueDto);
         }
 
         [TestMethod]
@@ -166,7 +174,7 @@ namespace TD1.Controllers.Tests
             // Act
             var actionResult = mockController.DeleteMarque(334).Result;
             // Assert
-            Assert.IsInstanceOfType(actionResult, typeof(NoContentResult), "Pas un NoContentResult"); // Test du type de retour
+            Assert.IsInstanceOfType(actionResult, typeof(NoContentResult), "Pas un NoContentResult");
         }
 
     }
