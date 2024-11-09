@@ -108,7 +108,6 @@ namespace TD1.Controllers.Tests
             mockRepository.Setup(r => r.AddAsync(It.IsAny<Marque>())).Returns(Task.FromResult(expectedMarque));
             mockMapper.Setup(m => m.Map<MarqueDto>(expectedMarque)).Returns(marqueDto);
             
-
             // Act
             var actionResult = mockController.PostMarque(marqueDto).Result;
             // Assert
@@ -176,6 +175,5 @@ namespace TD1.Controllers.Tests
             // Assert
             Assert.IsInstanceOfType(actionResult, typeof(NoContentResult), "Pas un NoContentResult");
         }
-
     }
 }

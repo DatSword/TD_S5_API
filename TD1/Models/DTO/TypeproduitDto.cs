@@ -1,7 +1,7 @@
 ﻿
 namespace TD1.Models.DTO
 {
-    public class TypeproduitDto
+    public class TypeProduitDto
     {
         public int IdTypeProduit { get; set; }
         public string? NomTypeProduit { get; set; }
@@ -9,7 +9,7 @@ namespace TD1.Models.DTO
         //pour le test GetAll
         public override bool Equals(object? obj)
         {
-            return obj is TypeproduitDto dto &&
+            return obj is TypeProduitDto dto &&
                    this.IdTypeProduit == dto.IdTypeProduit &&
                    this.NomTypeProduit == dto.NomTypeProduit;
         }

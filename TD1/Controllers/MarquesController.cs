@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using TD1.Models;
 using TD1.Models.DTO;
 using TD1.Models.Repository;
@@ -38,7 +32,7 @@ namespace TD1.Controllers
             return Ok(marqueDtos);
         }
 
-        // GET: api/Marques/5
+        // GET: api/Marques/{id}
         [HttpGet]
         [Route("[action]/{id}")]
         [ActionName("GetById")]
@@ -104,7 +98,7 @@ namespace TD1.Controllers
             return Ok(updatedMarqueDto);
         }
 
-        // DELETE: api/Marques/5
+        // DELETE: api/Marques/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMarque(int id)
         {
@@ -117,6 +111,5 @@ namespace TD1.Controllers
             await dataRepository.DeleteAsync(marque.Value);
             return NoContent();
         }
-
     }
 }

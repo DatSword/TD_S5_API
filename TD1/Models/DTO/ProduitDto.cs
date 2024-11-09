@@ -5,8 +5,8 @@ namespace TD1.Models.DTO
     {
         public int IdProduit { get; set; }
         public string? NomProduit { get; set; }
-        public string? IdTypeProduit { get; set; }
-        public string? IdMarque { get; set; }
+        public int IdTypeProduit { get; set; }
+        public int IdMarque { get; set; }
 
         //pour le test GetAll
         public override bool Equals(object? obj)
