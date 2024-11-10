@@ -18,6 +18,11 @@ namespace TD1.Models.Mapper
                 .ForMember(pDto => pDto.IdTypeProduit, act => act.MapFrom(p => p.IdTypeProduit))
                 .ForMember(pDto => pDto.IdMarque, act => act.MapFrom(p => p.IdMarque))
                 .ReverseMap();
+
+            CreateMap<TypeProduit, TypeProduitDto>()
+                .ForMember(tpDto => tpDto.IdTypeProduit, act => act.MapFrom(tp => tp.IdTypeProduit))
+                .ForMember(tpDto => tpDto.NomTypeProduit, act => act.MapFrom(tp => tp.NomTypeProduit))
+                .ReverseMap();
         }
     }
 }
