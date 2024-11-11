@@ -14,7 +14,7 @@ namespace TD1BlazorApp.Models
         [Column("nommarque")]
         public string? NomMarque { get; set; }
 
-        [InverseProperty(nameof(Produit.IdmarqueNavigation))]
+        [InverseProperty(nameof(Produit.IdMarqueNavigation))]
         public virtual ICollection<Produit> Produits { get; set; } = new List<Produit>();
     }
 }

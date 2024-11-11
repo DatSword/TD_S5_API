@@ -3,6 +3,7 @@ using TD1.Models.Repository;
 using TD1.Models;
 using Microsoft.EntityFrameworkCore;
 using TD1.Models.Mapper;
+using TD1.Models.DTO;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,9 +11,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddScoped<IDataRepository<Marque>, MarqueManager>();
-builder.Services.AddScoped<IDataRepository<Produit>, ProduitManager>();
-builder.Services.AddScoped<IDataRepository<TypeProduit>, TypeProduitManager>();
+builder.Services.AddScoped<IDataRepository<Marque, MarqueDto, MarqueDetailDto>, MarqueManager>();
+builder.Services.AddScoped<IDataRepository<Produit, ProduitDto, ProduitDetailDto>, ProduitManager>();
+builder.Services.AddScoped<IDataRepository<TypeProduit, TypeProduitDto, TypeProduitDetailDto>, TypeProduitManager>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

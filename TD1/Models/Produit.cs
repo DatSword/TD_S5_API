@@ -39,14 +39,12 @@ namespace TD1.Models
         public int StockMax { get; set; }
 
 
-        [ForeignKey("idmarque")]
+        [ForeignKey(nameof(IdMarque))]
         [InverseProperty(nameof(Marque.Produits))]
+        public virtual Marque? IdMarqueNavigation { get; set; }
 
-        public virtual Marque? IdmarqueNavigation { get; set; }
-
-        [ForeignKey("idtypeproduit")]
+        [ForeignKey(nameof(IdTypeProduit))]
         [InverseProperty(nameof(TypeProduit.Produits))]
-
         public virtual TypeProduit? IdtypeProduitNavigation { get; set; }
 
     }

@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace TD1.Migrations
 {
     /// <inheritdoc />
-    public partial class CreationBD2 : Migration
+    public partial class CreationBD : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -41,43 +41,42 @@ namespace TD1.Migrations
                 name: "produit",
                 columns: table => new
                 {
-                    idtypeproduit = table.Column<int>(type: "integer", nullable: false),
-                    idmarque = table.Column<int>(type: "integer", nullable: false),
-                    idproduit = table.Column<int>(type: "integer", nullable: false),
+                    idproduit = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     nomproduit = table.Column<string>(type: "text", nullable: false),
                     description = table.Column<string>(type: "text", nullable: false),
                     idnomphoto = table.Column<string>(type: "text", nullable: false),
                     iduriproduit = table.Column<string>(type: "text", nullable: false),
+                    idtypeproduit = table.Column<int>(type: "integer", nullable: false),
+                    idmarque = table.Column<int>(type: "integer", nullable: false),
                     stockreel = table.Column<int>(type: "integer", nullable: false),
                     stockmin = table.Column<int>(type: "integer", nullable: false),
-                    stockmax = table.Column<int>(type: "integer", nullable: false),
-                    idmarque1 = table.Column<int>(type: "integer", nullable: true),
-                    idtypeproduit1 = table.Column<int>(type: "integer", nullable: true)
+                    stockmax = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_produit", x => new { x.idmarque, x.idtypeproduit });
+                    table.PrimaryKey("pk_produit", x => x.idproduit);
                     table.ForeignKey(
                         name: "fk_produit_marque",
-                        column: x => x.idmarque1,
+                        column: x => x.idmarque,
                         principalTable: "marque",
                         principalColumn: "idmarque");
                     table.ForeignKey(
                         name: "fk_produit_typeproduit",
-                        column: x => x.idtypeproduit1,
+                        column: x => x.idtypeproduit,
                         principalTable: "typeproduit",
                         principalColumn: "idtypeproduit");
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_produit_idmarque1",
+                name: "IX_produit_idmarque",
                 table: "produit",
-                column: "idmarque1");
+                column: "idmarque");
 
             migrationBuilder.CreateIndex(
-                name: "IX_produit_idtypeproduit1",
+                name: "IX_produit_idtypeproduit",
                 table: "produit",
-                column: "idtypeproduit1");
+                column: "idtypeproduit");
         }
 
         /// <inheritdoc />

@@ -8,20 +8,30 @@ namespace TD1.Models.Mapper
         public MapperProfile()
         {
             CreateMap<Marque, MarqueDto>()
-                .ForMember(mDto => mDto.IdMarque, act => act.MapFrom(m => m.IdMarque))
-                .ForMember(mDto => mDto.NomMarque, act => act.MapFrom(m => m.NomMarque))
+                .ForMember(dest => dest.IdMarque, opt => opt.MapFrom(src => src.IdMarque))
+                .ForMember(dest => dest.NomMarque, opt => opt.MapFrom(src => src.NomMarque))
+                .ForMember(dest => dest.NbProduits, opt => opt.MapFrom(src => src.Produits.Count))
                 .ReverseMap();
 
             CreateMap<Produit, ProduitDto>()
-                .ForMember(pDto => pDto.IdProduit, act => act.MapFrom(p => p.IdProduit))
-                .ForMember(pDto => pDto.NomProduit, act => act.MapFrom(p => p.NomProduit))
-                .ForMember(pDto => pDto.IdTypeProduit, act => act.MapFrom(p => p.IdTypeProduit))
-                .ForMember(pDto => pDto.IdMarque, act => act.MapFrom(p => p.IdMarque))
+                //.ForMember(dest => dest.IdProduit, opt => opt.MapFrom(src => src.IdProduit))
+                //.ForMember(dest => dest.NomProduit, opt => opt.MapFrom(src => src.NomProduit))
+                .ForMember(dest => dest.NomTypeProduit, opt => opt.MapFrom(src => src.IdtypeProduitNavigation.NomTypeProduit)) // Suppose un type lié
+                .ForMember(dest => dest.NomMarque, opt => opt.MapFrom(src => src.IdMarqueNavigation.NomMarque)) // Suppose une marque liée
+                .ReverseMap();
+
+            CreateMap<Produit, ProduitDetailDto>()
+                //.ForMember(dest => dest.IdProduit, opt => opt.MapFrom(src => src.IdProduit))
+                //.ForMember(dest => dest.NomProduit, opt => opt.MapFrom(src => src.NomProduit))
+                .ForMember(dest => dest.TypeProduit, opt => opt.MapFrom(src => src.IdtypeProduitNavigation.NomTypeProduit))
+                .ForMember(dest => dest.NomMarque, opt => opt.MapFrom(src => src.IdMarqueNavigation.NomMarque))
+                .ForMember(dest => dest.EnReappro, opt => opt.MapFrom(src => src.StockReel < src.StockMin))
                 .ReverseMap();
 
             CreateMap<TypeProduit, TypeProduitDto>()
-                .ForMember(tpDto => tpDto.IdTypeProduit, act => act.MapFrom(tp => tp.IdTypeProduit))
-                .ForMember(tpDto => tpDto.NomTypeProduit, act => act.MapFrom(tp => tp.NomTypeProduit))
+                .ForMember(dest => dest.IdTypeProduit, opt => opt.MapFrom(src => src.IdTypeProduit))
+                .ForMember(dest => dest.NomTypeProduit, opt => opt.MapFrom(src => src.NomTypeProduit))
+                .ForMember(dest => dest.NbProduits, opt => opt.MapFrom(src => src.Produits.Count))
                 .ReverseMap();
         }
     }

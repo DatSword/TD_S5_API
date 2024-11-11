@@ -1,11 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using TD1BlazorApp.Models;
 
 namespace TD1BlazorApp.Models
 {
@@ -43,16 +38,17 @@ namespace TD1BlazorApp.Models
         [Column("stockmax")]
         public int StockMax { get; set; }
 
+        //Props du DTO
+        public string? NomTypeProduit { get; set; }
+        public string? NomMarque { get; set; }
 
-        [ForeignKey("idmarque")]
+        [ForeignKey(nameof(IdMarque))]
         [InverseProperty(nameof(Marque.Produits))]
+        public virtual Marque? IdMarqueNavigation { get; set; }
 
-        public virtual Marque IdmarqueNavigation { get; set; } = null!;
-
-        [ForeignKey("idtypeproduit")]
+        [ForeignKey(nameof(IdTypeProduit))]
         [InverseProperty(nameof(TypeProduit.Produits))]
-
-        public virtual TypeProduit IdtypeProduitNavigation { get; set; } = null!;
+        public virtual TypeProduit? IdtypeProduitNavigation { get; set; }
 
     }
 }

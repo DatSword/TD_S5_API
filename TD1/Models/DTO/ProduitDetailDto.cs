@@ -4,8 +4,8 @@
     {
         public int IdProduit { get; set; }
         public string? NomProduit { get; set; }
-        public int IdTypeProduit { get; set; }
-        public int IdMarque { get; set; }
+        public string? TypeProduit { get; set; }
+        public string? NomMarque { get; set; }
         public string? Description { get; set; }
         public string? Nomphoto { get; set; }
         public string? Uriphoto { get; set; }

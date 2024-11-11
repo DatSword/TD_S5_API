@@ -5,8 +5,8 @@ namespace TD1.Models.DTO
     {
         public int IdProduit { get; set; }
         public string? NomProduit { get; set; }
-        public int IdTypeProduit { get; set; }
-        public int IdMarque { get; set; }
+        public string? NomTypeProduit { get; set; }
+        public string? NomMarque { get; set; }
 
         //pour le test GetAll
         public override bool Equals(object? obj)
@@ -14,13 +14,13 @@ namespace TD1.Models.DTO
             return obj is ProduitDto dto &&
                    this.IdProduit == dto.IdProduit &&
                    this.NomProduit == dto.NomProduit &&
-                   this.IdTypeProduit == dto.IdTypeProduit &&
-                   this.IdMarque == dto.IdMarque;
+                   this.NomTypeProduit == dto.NomTypeProduit &&
+                   this.NomMarque == dto.NomMarque;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(this.IdProduit, this.NomProduit, this.IdTypeProduit, this.IdMarque);
+            return HashCode.Combine(this.IdProduit, this.NomProduit, this.NomTypeProduit, this.NomMarque);
         }
     }
 }

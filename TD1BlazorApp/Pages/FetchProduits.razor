@@ -16,8 +16,8 @@ else
     <table class="table">
         <thead>
             <tr>
+                <th>Id</th>
                 <th>Nom</th>
-                <th>Description</th>
                 <th>Marque</th>
                 <th>Type de Produit</th>
             </tr>
@@ -26,10 +26,10 @@ else
             @foreach (var produit in produits)
             {
                 <tr>
+                    <td>@produit.IdProduit</td>
                     <td>@produit.NomProduit</td>
-                    <td>@produit.Description</td>
-                    <td>@produit.IdMarque</td>
-                    <td>@produit.IdTypeProduit</td>
+                    <td>@produit.NomMarque</td>
+                    <td>@produit.NomTypeProduit</td>
                 </tr>
             }
         </tbody>

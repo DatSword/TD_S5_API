@@ -19,8 +19,10 @@ namespace TD1BlazorApp
 
             builder.Services.AddScoped<IService<Produit>>(provider =>
                 new WSService<Produit>(provider.GetRequiredService<HttpClient>(), "Produits"));
+
             builder.Services.AddScoped<IService<Marque>>(provider =>
                 new WSService<Marque>(provider.GetRequiredService<HttpClient>(), "Marques"));
+
             builder.Services.AddScoped<IService<TypeProduit>>(provider =>
                 new WSService<TypeProduit>(provider.GetRequiredService<HttpClient>(), "TypeProduits"));
 

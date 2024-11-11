@@ -12,13 +12,11 @@ namespace TD1.Controllers
     {
         //private readonly ProduitsDBContext _context;
 
-        private readonly IDataRepository<Produit> dataRepository;
-        private readonly IMapper _mapper;
+        private readonly IDataRepository<Produit, ProduitDto, ProduitDetailDto> dataRepository;
 
-        public ProduitsController(IDataRepository<Produit> dataRepo, IMapper mapper)
+        public ProduitsController(IDataRepository<Produit, ProduitDto, ProduitDetailDto> dataRepo, IMapper mapper)
         {
             dataRepository = dataRepo;
-            _mapper = mapper;
         }
 
         // GET: api/Produits
@@ -26,10 +24,7 @@ namespace TD1.Controllers
         public async Task<ActionResult<IEnumerable<ProduitDto>>> GetProduits()
         {
             var produits = await dataRepository.GetAllAsync();
-
-            var produitDtos = produits.Value.Select(_mapper.Map<ProduitDto>);
-
-            return Ok(produitDtos);
+            return Ok(produits.Value);
         }
 
         // GET: api/Produits/{id}
@@ -38,18 +33,16 @@ namespace TD1.Controllers
         [ActionName("GetById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ProduitDto>> GetProduit(int id)
+        public async Task<ActionResult<ProduitDetailDto>> GetProduit(int id)
         {
-            var produit = await dataRepository.GetByIdAsync(id);
+            var produit = await dataRepository.GetEntityDtoByIdAsync(id);
 
-            if (produit == null)
+            if (produit.Value == null)
             {
                 return NotFound();
             }
 
-            var produitDto = _mapper.Map<ProduitDto>(produit.Value);
-
-            return Ok(produitDto);
+            return Ok(produit.Value);
         }
 
         // POST: api/Produits
@@ -57,20 +50,16 @@ namespace TD1.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<ProduitDto>> PostProduit(ProduitDto produitDto)
+        public async Task<ActionResult<Produit>> PostProduit(Produit produit)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var produit = _mapper.Map<Produit>(produitDto);
-
             await dataRepository.AddAsync(produit);
 
-            var produitDtoResult = _mapper.Map<ProduitDto>(produit);
-
-            return CreatedAtAction("GetById", new { id = produit.IdProduit }, produitDtoResult);
+            return CreatedAtAction("GetProduit", new { id = produit.IdProduit }, produit);
         }
 
         // PUT: api/Produits/{id}
@@ -78,32 +67,30 @@ namespace TD1.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ProduitDto>> PutProduit(int id, ProduitDto produitDto)
+        public async Task<IActionResult> PutProduit(int id, Produit produit)
         {
-            if (id != produitDto.IdProduit)
+            if (id != produit.IdProduit)
             {
                 return BadRequest();
             }
 
-            var produitToUpdate = await dataRepository.GetByIdAsync(id);
-            if (produitToUpdate == null)
+            var produitToUpdate = await dataRepository.GetEntityByIdAsync(id);
+            if (produitToUpdate.Value == null)
             {
                 return NotFound();
             }
-            var updatedProduit = _mapper.Map<Produit>(produitDto);
 
-            await dataRepository.UpdateAsync(produitToUpdate.Value, updatedProduit);
+            await dataRepository.UpdateAsync(produitToUpdate.Value, produit);
 
-            var updatedProduitDto = _mapper.Map<ProduitDto>(updatedProduit);
-            return Ok(updatedProduitDto);
+            return NoContent();
         }
 
         // DELETE: api/Produits/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduit(int id)
         {
-            var produit = await dataRepository.GetByIdAsync(id);
-            if (produit == null)
+            var produit = await dataRepository.GetEntityByIdAsync(id);
+            if (produit.Value == null)
             {
                 return NotFound();
             }

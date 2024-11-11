@@ -4,6 +4,6 @@
     {
         public int IdMarque { get; set; }
         public string? NomMarque { get; set; }
-        public int Produits { get; set; }
+        public int NbProduits { get; set; }
     }
 }

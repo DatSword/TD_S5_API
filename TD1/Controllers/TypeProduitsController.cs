@@ -12,10 +12,10 @@ namespace TD1.Controllers
     {
         //private readonly ProduitsDBContext _context;
 
-        private readonly IDataRepository<TypeProduit> dataRepository;
+        private readonly IDataRepository<TypeProduit, TypeProduitDto, TypeProduitDetailDto> dataRepository;
         private readonly IMapper _mapper;
 
-        public TypeProduitsController(IDataRepository<TypeProduit> dataRepo, IMapper mapper)
+        public TypeProduitsController(IDataRepository<TypeProduit, TypeProduitDto, TypeProduitDetailDto> dataRepo, IMapper mapper)
         {
             dataRepository = dataRepo;
             _mapper = mapper;
@@ -25,11 +25,8 @@ namespace TD1.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TypeProduitDto>>> GetTypeProduits()
         {
-            var typeProds = await dataRepository.GetAllAsync();
-
-            var typeProdDtos = typeProds.Value.Select(_mapper.Map<TypeProduitDto>);
-
-            return Ok(typeProdDtos);
+            var typeProduits = await dataRepository.GetAllAsync();
+            return Ok(typeProduits.Value);
         }
 
         // GET: api/TypeProduits/{id}
@@ -38,18 +35,16 @@ namespace TD1.Controllers
         [ActionName("GetById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<TypeProduitDto>> GetTypeProduit(int id)
+        public async Task<ActionResult<TypeProduitDetailDto>> GetTypeProduit(int id)
         {
-            var typeProd = await dataRepository.GetByIdAsync(id);
+            var typeProduit = await dataRepository.GetEntityDtoByIdAsync(id);
 
-            if (typeProd == null)
+            if (typeProduit == null)
             {
                 return NotFound();
             }
 
-            var typeProdDto = _mapper.Map<TypeProduitDto>(typeProd.Value);
-
-            return Ok(typeProdDto);
+            return Ok(typeProduit.Value);
         }
 
         // POST: api/TypeProduits
@@ -57,58 +52,49 @@ namespace TD1.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<TypeProduitDto>> PostMarque(TypeProduitDto typeProdDto)
+        public async Task<ActionResult<TypeProduit>> PostTypeProduit(TypeProduit typeProduit)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            var typeProd = _mapper.Map<TypeProduit>(typeProdDto);
-
-            await dataRepository.AddAsync(typeProd);
-
-            var typeProdDtoResult = _mapper.Map<TypeProduitDto>(typeProd);
-
-            return CreatedAtAction("GetById", new { id = typeProd.IdTypeProduit }, typeProdDtoResult);
+            await dataRepository.AddAsync(typeProduit);
+            return CreatedAtAction("GetById", new { id = typeProduit.IdTypeProduit }, typeProduit);
         }
 
         // PUT: api/Marques/{id}
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<TypeProduitDto>> PutTypeProduit(int id, TypeProduitDto typeprodDto)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> PutTypeProduit(int id, TypeProduit typeProduit)
         {
-            if (id != typeprodDto.IdTypeProduit)
+            if (id != typeProduit.IdTypeProduit)
             {
                 return BadRequest();
             }
-
-            var typeprodToUpdate = await dataRepository.GetByIdAsync(id);
-            if (typeprodToUpdate == null)
+            var typToUpdate = await dataRepository.GetEntityByIdAsync(id);
+            if (typToUpdate == null)
             {
                 return NotFound();
             }
-            var updatedTypeProd = _mapper.Map<TypeProduit>(typeprodDto);
-
-            await dataRepository.UpdateAsync(typeprodToUpdate.Value, updatedTypeProd);
-
-            var updatedTypeProdDto = _mapper.Map<TypeProduitDto>(updatedTypeProd);
-            return Ok(updatedTypeProdDto);
+            else
+            {
+                await dataRepository.UpdateAsync(typToUpdate.Value, typeProduit);
+                return NoContent();
+            }
         }
 
         // DELETE: api/Marques/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTypeProduit(int id)
         {
-            var typeProduit = await dataRepository.GetByIdAsync(id);
+            var typeProduit = await dataRepository.GetEntityByIdAsync(id);
             if (typeProduit == null)
             {
                 return NotFound();
             }
-
             await dataRepository.DeleteAsync(typeProduit.Value);
             return NoContent();
         }

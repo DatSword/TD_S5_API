@@ -2,10 +2,11 @@
 using TD1.Models.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TD1.Models.DTO;
 
 namespace TD1.Models.DataManager
 {
-    public class TypeProduitManager : IDataRepository<TypeProduit>
+    public class TypeProduitManager : IDataRepository<TypeProduit, TypeProduitDto, TypeProduitDetailDto>
     {
         readonly ProduitsDBContext produitsDBContext;
 
@@ -16,14 +17,41 @@ namespace TD1.Models.DataManager
             produitsDBContext = context;
         }
 
-        public async Task<ActionResult<IEnumerable<TypeProduit>>> GetAllAsync()
+        public async Task<ActionResult<IEnumerable<TypeProduitDto>>> GetAllAsync()
         {
-            return await produitsDBContext.TypeProduits.ToListAsync();
+            var typeProduitDtos = await produitsDBContext.TypeProduits
+                .Select(t => new TypeProduitDto
+                {
+                    IdTypeProduit = t.IdTypeProduit,
+                    NomTypeProduit = t.NomTypeProduit,
+                    NbProduits = t.Produits.Count() // Comptage des produits associés
+                })
+                .ToListAsync();
+
+            return new ActionResult<IEnumerable<TypeProduitDto>>(typeProduitDtos);
         }
 
-        public async Task<ActionResult<TypeProduit>> GetByIdAsync(int id)
+        public async Task<ActionResult<TypeProduit>> GetEntityByIdAsync(int id)
         {
             return await produitsDBContext.TypeProduits.FirstOrDefaultAsync(p => p.IdTypeProduit == id);
+        }
+
+        public async Task<ActionResult<TypeProduitDetailDto>> GetEntityDtoByIdAsync(int id)
+        {
+            var typeProduit = await produitsDBContext.Marques
+                .Include(m => m.Produits)
+                .FirstOrDefaultAsync(m => m.IdMarque == id);
+
+            if (typeProduit == null) return new NotFoundResult();
+
+            var typeProduitDetailDto = new TypeProduitDetailDto
+            {
+                IdTypeProduit = typeProduit.IdMarque,
+                NomTypeProduit = typeProduit.NomMarque,
+                NbProduits = typeProduit.Produits.Count
+            };
+
+            return new ActionResult<TypeProduitDetailDto>(typeProduitDetailDto);
         }
 
         public async Task AddAsync(TypeProduit entity)

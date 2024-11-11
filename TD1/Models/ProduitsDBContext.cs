@@ -36,10 +36,10 @@ namespace TD1.Models
         {
             modelBuilder.Entity<Produit>(entity =>
             {
-                entity.HasKey(e => new { e.IdMarque, e.IdTypeProduit })
+                entity.HasKey(e => new { e.IdProduit })
                     .HasName("pk_produit");
 
-                entity.HasOne(d => d.IdmarqueNavigation)
+                entity.HasOne(d => d.IdMarqueNavigation)
                     .WithMany(p => p.Produits)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("fk_produit_marque");

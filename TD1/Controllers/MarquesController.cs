@@ -12,10 +12,10 @@ namespace TD1.Controllers
     {
         //private readonly ProduitsDBContext _context;
 
-        private readonly IDataRepository<Marque> dataRepository;
+        private readonly IDataRepository<Marque, MarqueDto, MarqueDetailDto> dataRepository;
         private readonly IMapper _mapper;
 
-        public MarquesController(IDataRepository<Marque> dataRepo, IMapper mapper)
+        public MarquesController(IDataRepository<Marque, MarqueDto, MarqueDetailDto> dataRepo, IMapper mapper)
         {
             dataRepository = dataRepo;
             _mapper = mapper;
@@ -26,10 +26,7 @@ namespace TD1.Controllers
         public async Task<ActionResult<IEnumerable<MarqueDto>>> GetMarques()
         {
             var marques = await dataRepository.GetAllAsync();
-
-            var marqueDtos = marques.Value.Select(_mapper.Map<MarqueDto>);
-
-            return Ok(marqueDtos);
+            return Ok(marques.Value);
         }
 
         // GET: api/Marques/{id}
@@ -38,18 +35,16 @@ namespace TD1.Controllers
         [ActionName("GetById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<MarqueDto>> GetMarque(int id)
+        public async Task<ActionResult<MarqueDetailDto>> GetMarque(int id)
         {
-            var marque = await dataRepository.GetByIdAsync(id);
+            var marque = await dataRepository.GetEntityDtoByIdAsync(id);
 
             if (marque == null)
             {
                 return NotFound();
             }
 
-            var marqueDto = _mapper.Map<MarqueDto>(marque.Value);
-
-            return Ok(marqueDto);
+            return Ok(marque.Value);
         }
 
         // POST: api/Marques
@@ -57,57 +52,48 @@ namespace TD1.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<MarqueDto>> PostMarque(MarqueDto marqueDto)
+        public async Task<ActionResult<Marque>> PostMarque(Marque marque)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            var marque = _mapper.Map<Marque>(marqueDto);
-
             await dataRepository.AddAsync(marque);
-
-            var marqueDtoResult = _mapper.Map<MarqueDto>(marque);
-
-            return CreatedAtAction("GetById", new { id = marque.IdMarque }, marqueDtoResult);
+            return CreatedAtAction("GetById", new { id = marque.IdMarque }, marque);
         }
 
         // PUT: api/Marques/{id}
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<MarqueDto>> PutMarque(int id, MarqueDto marqueDto)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> PutMarque(int id, Marque marque)
         {
-            if (id != marqueDto.IdMarque)
+            if (id != marque.IdMarque)
             {
                 return BadRequest();
             }
-
-            var marqueToUpdate = await dataRepository.GetByIdAsync(id);
-            if (marqueToUpdate == null)
+            var marToUpdate = await dataRepository.GetEntityByIdAsync(id);
+            if (marToUpdate == null)
             {
                 return NotFound();
             }
-            var updatedMarque = _mapper.Map<Marque>(marqueDto);
-
-            await dataRepository.UpdateAsync(marqueToUpdate.Value, updatedMarque);
-
-            var updatedMarqueDto = _mapper.Map<MarqueDto>(updatedMarque);
-            return Ok(updatedMarqueDto);
+            else
+            {
+                await dataRepository.UpdateAsync(marToUpdate.Value, marque);
+                return NoContent();
+            }
         }
 
         // DELETE: api/Marques/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMarque(int id)
         {
-            var marque = await dataRepository.GetByIdAsync(id);
+            var marque = await dataRepository.GetEntityByIdAsync(id);
             if (marque == null)
             {
                 return NotFound();
             }
-
             await dataRepository.DeleteAsync(marque.Value);
             return NoContent();
         }
