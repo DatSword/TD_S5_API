@@ -125,6 +125,7 @@ namespace TD1.Controllers.Tests
             // Assert
             Assert.IsInstanceOfType(actionResult, typeof(NoContentResult), "Pas un NoContentResult");
         }
+
         [TestMethod]
         public void DeleteMarqueTest_AvecMoq()
         {
