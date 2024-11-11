@@ -49,41 +49,14 @@ namespace TD1.Controllers.Tests
         {
             //Arrange
             List<Marque> lesMarques = context.Marques.ToList();
+
             // Act
             var res = controller.GetMarques().Result;
+
             // Assert
             Assert.IsNotNull(res);
             CollectionAssert.AreEqual(lesMarques, res.Value.ToList(), "Les listes de marques ne sont pas identiques");
         }
-
-        //[TestMethod]
-        //public void GetMarqueById_ExistingIdPassed_ReturnsRightItem_AvecMoq()
-        //{
-        //    // Arrange
-        //    Marque marque = new Marque
-        //    {
-        //        IdMarque = 1,
-        //        NomMarque = "Loréal",
-        //    };
-
-        //    MarqueDto expectedMarqueDto = new MarqueDto
-        //    {
-        //        IdMarque = 1,
-        //        NomMarque = "Loréal",
-        //    };
-
-        //    mockRepository.Setup(x => x.GetEntityDtoByIdAsync(1)).ReturnsAsync(marque);
-        //    mockMapper.Setup(m => m.Map<MarqueDto>(marque)).Returns(expectedMarqueDto);
-
-        //    // Act
-        //    var actionResult = mockController.GetMarque(1).Result;
-        //    // Assert
-        //    Assert.IsNotNull(actionResult);
-
-        //    var okResult = actionResult.Result as OkObjectResult;
-        //    Assert.IsNotNull(okResult.Value);
-        //    Assert.AreEqual(expectedMarqueDto, okResult.Value as MarqueDto);
-        //}
 
         [TestMethod]
         public void GetMarqueById_ExistingIdPassed_ReturnsRightItem_AvecMoq()
@@ -95,9 +68,12 @@ namespace TD1.Controllers.Tests
                 NomMarque = "Loréal",
                 NbProduits = 1,
             };
+
             mockRepository.Setup(x => x.GetEntityDtoByIdAsync(1).Result).Returns(marque);
+
             // Act
             var actionResult = mockController.GetMarque(1).Result;
+
             // Assert
             Assert.IsNotNull(actionResult);
             Assert.IsNotNull(actionResult.Value);
@@ -108,14 +84,15 @@ namespace TD1.Controllers.Tests
         public void PostMarque_ModelValidated_CreationOK_AvecMoq()
         {
             // Arrange
-
             Marque marque = new Marque
             {
                 IdMarque = 666,
                 NomMarque = "VCOUT_Industries",
             };
+
             // Act
             var actionResult = mockController.PostMarque(marque).Result;
+
             // Assert
             Assert.IsInstanceOfType(actionResult, typeof(ActionResult<Marque>), "Pas un ActionResult<>");
             Assert.IsInstanceOfType(actionResult.Result, typeof(CreatedAtActionResult), "Pas un CreatedAtActionResult");
@@ -128,6 +105,7 @@ namespace TD1.Controllers.Tests
         [TestMethod]
         public void PutMarqueTestAvecMoq()
         {
+            // Arrange
             Marque marqueToEdit = new Marque
             {
                 IdMarque = 667,
@@ -143,6 +121,7 @@ namespace TD1.Controllers.Tests
 
             // Act
             var actionResult = mockController.PutMarque(667, userEdited).Result;
+
             // Assert
             Assert.IsInstanceOfType(actionResult, typeof(NoContentResult), "Pas un NoContentResult");
         }
