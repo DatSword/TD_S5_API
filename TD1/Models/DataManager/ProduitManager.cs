@@ -1,5 +1,4 @@
-﻿using TD1.Models;
-using TD1.Models.Repository;
+﻿using TD1.Models.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
