@@ -82,7 +82,7 @@ namespace TD1.Controllers
 
             await dataRepository.UpdateAsync(produitToUpdate.Value, produit);
 
-            return NoContent();
+            return Ok(produit);
         }
 
         // DELETE: api/Produits/{id}

@@ -81,7 +81,7 @@ namespace TD1.Controllers
             else
             {
                 await dataRepository.UpdateAsync(marToUpdate.Value, marque);
-                return NoContent();
+                return Ok(marque);
             }
         }
 

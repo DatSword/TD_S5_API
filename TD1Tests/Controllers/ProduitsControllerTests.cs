@@ -1,227 +1,208 @@
-﻿//using Microsoft.AspNetCore.Mvc;
-//using TD1.Models;
-//using Microsoft.EntityFrameworkCore;
-//using TD1.Models.Repository;
-//using TD1.Models.DataManager;
-//using Moq;
-//using AutoMapper;
-//using TD1.Models.DTO;
+﻿using Microsoft.AspNetCore.Mvc;
+using TD1.Models;
+using Microsoft.EntityFrameworkCore;
+using TD1.Models.Repository;
+using TD1.Models.DataManager;
+using Moq;
+using AutoMapper;
+using TD1.Models.DTO;
 
-//namespace TD1.Controllers.Tests
-//{
-//    [TestClass()]
-//    public class ProduitControllerTests
-//    {
+namespace TD1.Controllers.Tests
+{
+    [TestClass()]
+    public class ProduitControllerTests
+    {
 
-//        private ProduitsDBContext context;
-//        private IDataRepository<Produit> dataRepository;
-//        private IMapper mapper;
-//        private ProduitsController controller;
+        private ProduitsDBContext context;
+        private IDataRepository<Produit, ProduitDto, ProduitDetailDto> dataRepository;
+        private IMapper mapper;
+        private ProduitsController controller;
 
-//        private Mock<IDataRepository<Produit>> mockRepository;
-//        private Mock<IMapper> mockMapper;
-//        private ProduitsController mockController;
+        private Mock<IDataRepository<Produit, ProduitDto, ProduitDetailDto>> mockRepository;
+        private Mock<IMapper> mockMapper;
+        private ProduitsController mockController;
 
-//        [TestInitialize]
-//        public void InitTest()
-//        {
-//            // Arrange
+        [TestInitialize]
+        public void InitTest()
+        {
+            // Arrange
 
-//            //Pour les tests classiques
-//            var builder = new DbContextOptionsBuilder<ProduitsDBContext>().UseNpgsql("Server=localhost;port=5432;Database=ProduitsDB; uid=postgres;password=postgres;");
-//            context = new ProduitsDBContext(builder.Options);
-//            dataRepository = new ProduitManager(context);
-//            var config = new MapperConfiguration(cfg =>
-//            {
-//                cfg.CreateMap<Produit, ProduitDto>();
-//            });
-//            mapper = config.CreateMapper();
-//            controller = new ProduitsController(dataRepository, mapper);
+            //Pour les tests classiques
+            var builder = new DbContextOptionsBuilder<ProduitsDBContext>().UseNpgsql("Server=localhost;port=5432;Database=ProduitsDB; uid=postgres;password=postgres;");
+            context = new ProduitsDBContext(builder.Options);
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<Produit, ProduitDto>();
+            });
+            mapper = config.CreateMapper();
+            dataRepository = new ProduitManager(context, mapper);
+            controller = new ProduitsController(dataRepository, mapper);
 
-//            //Pour les tests moqs
-//            mockRepository = new Mock<IDataRepository<Produit>>();
-//            mockMapper = new Mock<IMapper>();
-//            mockController = new ProduitsController(mockRepository.Object, mockMapper.Object);
-//        }
+            //Pour les tests moqs
+            mockRepository = new Mock<IDataRepository<Produit, ProduitDto, ProduitDetailDto>>();
+            mockMapper = new Mock<IMapper>();
+            mockController = new ProduitsController(mockRepository.Object, mockMapper.Object);
+        }
 
-//        [TestMethod()]
-//        public void GetProduitsTest()
-//        {
-//            //Arrange
-//            List<Produit> lesProduits = context.Produits.ToList();
-//            List<ProduitDto> expectedProduitDtos = lesProduits.Select(m => mapper.Map<ProduitDto>(m)).ToList();
-//            // Act
-//            var res = controller.GetProduits().Result;
-//            var okResult = res.Result as OkObjectResult;
-//            var actualProduitDtos = okResult.Value as IEnumerable<ProduitDto>;
-//            // Assert
-//            Assert.IsNotNull(actualProduitDtos, "La valeur de la réponse est null.");
-//            CollectionAssert.AreEqual(expectedProduitDtos, actualProduitDtos.ToList(), "Les listes de produits ne sont pas identiques");
-//        }
+        [TestMethod()]
+        public void GetProduitsTest()
+        {
+            //Arrange
+            var lesProduitDataRepos = dataRepository.GetAllAsync().Result;
+            var actualProduitDataRepos = lesProduitDataRepos.Value as IEnumerable<ProduitDto>;
 
-//        [TestMethod]
-//        public void GetProduitById_ExistingIdPassed_ReturnsRightItem_AvecMoq()
-//        {
-//            // Arrange
-//            Produit produit = new Produit
-//            {
-//                IdProduit = 1,
-//                NomProduit = "shampoing",
-//                Description = "bla",
-//                NomPhoto = "cool",
-//                UriPhoto = "https://coool.com",
-//                IdTypeProduit = 1,
-//                IdMarque = 1,
-//                StockReel = 1,
-//                StockMin = 1,
-//                StockMax = 1,
-//            };
+            // Act
+            var lesProduitDtos = controller.GetProduits().Result;
+            var okResult = lesProduitDtos.Result as OkObjectResult;
+            var actualProduitDtos = okResult.Value as IEnumerable<ProduitDto>;
 
-//            ProduitDto expectedProduitDto = new ProduitDto
-//            {
-//                IdProduit = 1,
-//                NomProduit = "shampoing",
-//                IdTypeProduit = 1,
-//                IdMarque = 1,
-//            };
+            // Assert
+            Assert.IsNotNull(actualProduitDtos, "La valeur de la réponse est null.");
+            CollectionAssert.AreEqual(actualProduitDataRepos.ToList(), actualProduitDtos.ToList(), "Les listes de produits ne sont pas identiques");
+        }
 
-//            mockRepository.Setup(x => x.GetByIdAsync(1)).ReturnsAsync(produit);
-//            mockMapper.Setup(m => m.Map<ProduitDto>(produit)).Returns(expectedProduitDto);
+        [TestMethod]
+        public void GetProduitById_ExistingIdPassed_ReturnsRightItem_AvecMoq()
+        {
+            // Arrange
+            Produit produit = new Produit
+            {
+                IdProduit = 1,
+                NomProduit = "shampoing 3 en 1",
+                Description = "bla",
+                NomPhoto = "cool",
+                UriPhoto = "https://coool.com",
+                IdTypeProduit = 1,
+                IdMarque = 1,
+                StockReel = 1,
+                StockMin = 1,
+                StockMax = 1,
+            };
 
-//            // Act
-//            var actionResult = mockController.GetProduit(1).Result;
-//            // Assert
-//            Assert.IsNotNull(actionResult);
+            ProduitDetailDto expectedProduitDto = new ProduitDetailDto
+            {
+                IdProduit = 1,
+                NomProduit = "shampoing 3 en 1",
+                NomTypeProduit = null,
+                NomMarque = null,
+            };
 
-//            var okResult = actionResult.Result as OkObjectResult;
-//            Assert.IsNotNull(okResult.Value);
-//            Assert.AreEqual(expectedProduitDto, okResult.Value as ProduitDto);
-//        }
+            mockRepository.Setup(x => x.GetEntityDtoByIdAsync(1)).ReturnsAsync(expectedProduitDto);
 
-//        [TestMethod]
-//        public void PostProduit_ModelValidated_CreationOK_AvecMoq()
-//        {
-//            // Arrange
-//            ProduitDto produitDto = new ProduitDto
-//            {
-//                IdProduit = 666,
-//                NomProduit = "Aurora 12",
-//                IdTypeProduit = 1,
-//                IdMarque = 1,
+            // Act
+            var actionResult = mockController.GetProduit(1).Result;
+            // Assert
+            Assert.IsNotNull(actionResult);
 
-//            };
+            var okResult = actionResult.Result as OkObjectResult;
+            Assert.IsNotNull(okResult.Value);
+            Assert.AreEqual(expectedProduitDto, okResult.Value as ProduitDetailDto);
+        }
 
-//            Produit expectedProduit = new Produit
-//            {
-//                IdProduit = 666,
-//                NomProduit = "Aurora 12",
-//                Description = "bla",
-//                NomPhoto = "cool",
-//                UriPhoto = "https://coool.com",
-//                IdTypeProduit = 1,
-//                IdMarque = 1,
-//                StockReel = 1,
-//                StockMin = 1,
-//                StockMax = 1,
-//            };
+        [TestMethod]
+        public void PostProduit_ModelValidated_CreationOK_AvecMoq()
+        {
+            // Arrange
+            Produit prod = new Produit
+            {
+                IdProduit = 666,
+                NomProduit = "Aurora 12",
+                Description = "bla",
+                NomPhoto = "cool",
+                UriPhoto = "https://coool.com",
+                IdTypeProduit = 1,
+                IdMarque = 1,
+                StockReel = 1,
+                StockMin = 1,
+                StockMax = 1,
+            };
+            // Act
+            var actionResult = mockController.PostProduit(prod).Result;
+            // Assert
+            Assert.IsInstanceOfType(actionResult, typeof(ActionResult<Produit>), "Pas un ActionResult<>");
+            Assert.IsInstanceOfType(actionResult.Result, typeof(CreatedAtActionResult), "Pas un CreatedAtActionResult");
+            var result = actionResult.Result as CreatedAtActionResult;
+            Assert.IsInstanceOfType(result.Value, typeof(Produit), "Pas un prod");
+            prod.IdProduit = ((Produit)result.Value).IdProduit;
+            Assert.AreEqual(prod, (Produit)result.Value, "Prods pas identiques");
+        }
 
-//            mockMapper.Setup(m => m.Map<Produit>(produitDto)).Returns(expectedProduit);
-//            mockRepository.Setup(r => r.AddAsync(It.IsAny<Produit>())).Returns(Task.FromResult(expectedProduit));
-//            mockMapper.Setup(m => m.Map<ProduitDto>(expectedProduit)).Returns(produitDto);
+        [TestMethod]
+        public void PutMarqueTestAvecMoq()
+        {
+            Produit produitToEdit = new Produit
+            {
+                IdProduit = 667,
+                NomProduit = "Iphone15",
+                Description = "bla",
+                NomPhoto = "cool",
+                UriPhoto = "https://coool.com",
+                IdTypeProduit = 1,
+                IdMarque = 1,
+                StockReel = 1,
+                StockMin = 1,
+                StockMax = 1,
 
-//            // Act
-//            var actionResult = mockController.PostProduit(produitDto).Result;
-//            // Assert
-//            Assert.IsInstanceOfType(actionResult, typeof(ActionResult<ProduitDto>), "Pas un ActionResult<>");
-//            Assert.IsInstanceOfType(actionResult.Result, typeof(CreatedAtActionResult), "Pas un CreatedAtActionResult");
+            };
 
-//            var result = actionResult.Result as CreatedAtActionResult;
-//            Assert.IsNotNull(result, "Le résultat CreatedAtActionResult est null.");
-//            Assert.IsInstanceOfType(result.Value, typeof(ProduitDto), "Pas un produit");
+            Produit produitEdited = new Produit
+            {
+                IdProduit = 667,
+                NomProduit = "Iphone16",
+                Description = "bla",
+                NomPhoto = "cool",
+                UriPhoto = "https://coool.com",
+                IdTypeProduit = 1,
+                IdMarque = 1,
+                StockReel = 1,
+                StockMin = 1,
+                StockMax = 1,
+            };
 
-//            var createdProduitDto = result.Value as ProduitDto;
-//            Assert.AreEqual(produitDto, createdProduitDto, "produits non identiques");
-//        }
+            mockRepository.Setup(x => x.GetEntityByIdAsync(667)).ReturnsAsync(new ActionResult<Produit>(produitToEdit));
 
-//        [TestMethod]
-//        public void PutMarqueTestAvecMoq()
-//        {
-//            Produit produitToEdit = new Produit
-//            {
-//                IdProduit = 667,
-//                NomProduit = "Iphone15",
-//                Description = "bla",
-//                NomPhoto = "cool",
-//                UriPhoto = "https://coool.com",
-//                IdTypeProduit = 1,
-//                IdMarque = 1,
-//                StockReel = 1,
-//                StockMin = 1,
-//                StockMax = 1,
+            mockRepository.Setup(x => x.UpdateAsync(produitToEdit, produitEdited)).Returns(Task.CompletedTask);
 
-//            };
-//            ProduitDto produitEditedDto = new ProduitDto
-//            {
-//                IdProduit = 667,
-//                NomProduit = "Iphone16",
-//                IdTypeProduit = 1,
-//                IdMarque = 1,
-//            };
-//            Produit prodEdited = new Produit
-//            {
-//                IdProduit = 667,
-//                NomProduit = "Iphone16",
-//                Description = "bla",
-//                NomPhoto = "cool",
-//                UriPhoto = "https://coool.com",
-//                IdTypeProduit = 1,
-//                IdMarque = 1,
-//                StockReel = 1,
-//                StockMin = 1,
-//                StockMax = 1,
-//            };
+            // Act
+            var actionResult = mockController.PutProduit(667, produitEdited).Result;
 
-//            mockRepository.Setup(x => x.GetByIdAsync(667)).ReturnsAsync(produitToEdit);
-//            mockRepository.Setup(r => r.UpdateAsync(produitToEdit, It.IsAny<Produit>())).Returns(Task.FromResult(prodEdited));
-//            mockMapper.Setup(m => m.Map<Produit>(prodEdited)).Returns(prodEdited);
-//            mockMapper.Setup(m => m.Map<ProduitDto>(It.IsAny<Produit>())).Returns(produitEditedDto);
+            // Assert
+            Assert.IsInstanceOfType(actionResult, typeof(OkObjectResult), "Le résultat attendu est OkObjectResult, mais un autre type a été retourné.");
 
-//            // Act
-//            var actionResult = mockController.PutProduit(667, produitEditedDto).Result;
+            var okResult = actionResult as OkObjectResult;
+            Assert.IsNotNull(okResult, "La réponse OkObjectResult est null.");
 
-//            // Assert
-//            Assert.IsInstanceOfType(actionResult, typeof(ActionResult<ProduitDto>), "Pas un ActionResult<>");
+            var updatedProduit = okResult.Value as Produit;
+            Assert.IsNotNull(updatedProduit, "Le produit mis à jour est null.");
 
-//            var okResult = actionResult.Result as OkObjectResult;
-//            Assert.IsNotNull(okResult.Value);
-//            Assert.AreEqual(produitEditedDto, okResult.Value as ProduitDto);
-//        }
+            Assert.AreEqual(produitEdited, updatedProduit, "Le nom du produit n'a pas été mis à jour correctement.");
+        }
 
-//        [TestMethod]
-//        public void DeleteProduitTest_AvecMoq()
-//        {
-//            // Arrange
+        [TestMethod]
+        public void DeleteProduitTest_AvecMoq()
+        {
+            // Arrange
 
-//            Produit produit = new Produit
-//            {
-//                IdProduit = 334,
-//                NomProduit = "Galaxy 69",
-//                Description = "bla",
-//                NomPhoto = "cool",
-//                UriPhoto = "https://coool.com",
-//                IdTypeProduit = 1,
-//                IdMarque = 1,
-//                StockReel = 1,
-//                StockMin = 1,
-//                StockMax = 1,
-//            };
+            Produit produit = new Produit
+            {
+                IdProduit = 334,
+                NomProduit = "Galaxy 69",
+                Description = "bla",
+                NomPhoto = "cool",
+                UriPhoto = "https://coool.com",
+                IdTypeProduit = 1,
+                IdMarque = 1,
+                StockReel = 1,
+                StockMin = 1,
+                StockMax = 1,
+            };
 
-//            mockRepository.Setup(x => x.GetByIdAsync(334).Result).Returns(produit);
-//            // Act
-//            var actionResult = mockController.DeleteProduit(334).Result;
-//            // Assert
-//            Assert.IsInstanceOfType(actionResult, typeof(NoContentResult), "Pas un NoContentResult");
-//        }
+            mockRepository.Setup(x => x.GetEntityByIdAsync(334).Result).Returns(produit);
+            // Act
+            var actionResult = mockController.DeleteProduit(334).Result;
+            // Assert
+            Assert.IsInstanceOfType(actionResult, typeof(NoContentResult), "Pas un NoContentResult");
+        }
 
-//    }
-//}
+    }
+}

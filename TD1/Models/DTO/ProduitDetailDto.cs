@@ -4,7 +4,7 @@
     {
         public int IdProduit { get; set; }
         public string? NomProduit { get; set; }
-        public string? TypeProduit { get; set; }
+        public string? NomTypeProduit { get; set; }
         public string? NomMarque { get; set; }
         public string? Description { get; set; }
         public string? Nomphoto { get; set; }

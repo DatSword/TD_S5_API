@@ -82,7 +82,7 @@ namespace TD1.Controllers
             else
             {
                 await dataRepository.UpdateAsync(typToUpdate.Value, typeProduit);
-                return NoContent();
+                return Ok(typeProduit);
             }
         }
 
