@@ -151,8 +151,10 @@ namespace TD1.Controllers.Tests
                 NomMarque = "QBINDUSTRIES",
             };
             mockRepository.Setup(x => x.GetEntityByIdAsync(334).Result).Returns(marque);
+
             // Act
             var actionResult = mockController.DeleteMarque(334).Result;
+
             // Assert
             Assert.IsInstanceOfType(actionResult, typeof(NoContentResult), "Pas un NoContentResult"); // Test du type de retour
         }

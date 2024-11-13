@@ -91,6 +91,7 @@ namespace TD1.Controllers.Tests
 
             // Act
             var actionResult = mockController.GetProduit(1).Result;
+
             // Assert
             Assert.IsNotNull(actionResult);
 
@@ -198,8 +199,10 @@ namespace TD1.Controllers.Tests
             };
 
             mockRepository.Setup(x => x.GetEntityByIdAsync(334).Result).Returns(produit);
+
             // Act
             var actionResult = mockController.DeleteProduit(334).Result;
+
             // Assert
             Assert.IsInstanceOfType(actionResult, typeof(NoContentResult), "Pas un NoContentResult");
         }

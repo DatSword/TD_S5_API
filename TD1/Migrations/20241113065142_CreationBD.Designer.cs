@@ -11,7 +11,7 @@ using TD1.Models;
 namespace TD1.Migrations
 {
     [DbContext(typeof(ProduitsDBContext))]
-    [Migration("20241111215300_CreationBD")]
+    [Migration("20241113065142_CreationBD")]
     partial class CreationBD
     {
         /// <inheritdoc />

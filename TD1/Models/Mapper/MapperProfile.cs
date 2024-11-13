@@ -16,8 +16,8 @@ namespace TD1.Models.Mapper
             CreateMap<Produit, ProduitDto>()
                 //.ForMember(dest => dest.IdProduit, opt => opt.MapFrom(src => src.IdProduit))
                 //.ForMember(dest => dest.NomProduit, opt => opt.MapFrom(src => src.NomProduit))
-                .ForMember(dest => dest.NomTypeProduit, opt => opt.MapFrom(src => src.IdtypeProduitNavigation.NomTypeProduit)) // Suppose un type lié
-                .ForMember(dest => dest.NomMarque, opt => opt.MapFrom(src => src.IdMarqueNavigation.NomMarque)) // Suppose une marque liée
+                .ForMember(dest => dest.NomTypeProduit, opt => opt.MapFrom(src => src.IdtypeProduitNavigation.NomTypeProduit))
+                .ForMember(dest => dest.NomMarque, opt => opt.MapFrom(src => src.IdMarqueNavigation.NomMarque))
                 .ReverseMap();
 
             CreateMap<Produit, ProduitDetailDto>()
