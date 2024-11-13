@@ -21,24 +21,24 @@ namespace BUnitTests
             produitServiceMock = new Mock<IService<Produit>>();
         }
 
-        //[TestMethod]
-        //public void FetchDataDisplaysLoadingMessageInitially()
-        //{
-        //    // Arrange
-        //    produitServiceMock.Setup(service => service.GetItemsAsync())
-        //        .ReturnsAsync((IList<Produit>)null); // Simule l'état de chargement initial
-        //    Services.AddSingleton(produitServiceMock.Object);
+        [TestMethod]
+        public void FetchDataDisplaysLoadingMessageInitially()
+        {
+            // Arrange
+            produitServiceMock.Setup(service => service.GetItemsAsync())
+                .ReturnsAsync((List<Produit>)null);
+            Services.AddSingleton(produitServiceMock.Object);
 
-        //    // Act
-        //    var cut = RenderComponent<FetchProduits>();
+            // Act
+            var cut = RenderComponent<FetchProduits>();
 
-        //    // Assert
-        //    cut.MarkupMatches(@"
-        //        <h1>Visualisation des produits</h1>
-        //        <p>This component demonstrates fetching data from the server.</p>
-        //        <p><em>Loading...</em></p>
-        //    ");
-        //}
+            // Assert
+            cut.MarkupMatches(@"
+                <h1>Visualisation des produits</h1>
+                <p>This component demonstrates fetching data from the server.</p>
+                <p><em>Loading...</em></p>
+            ");
+        }
 
         [TestMethod]
         public void FetchDataDisplaysDataCorrectly()
@@ -46,8 +46,8 @@ namespace BUnitTests
             // Arrange
             var produits = new List<Produit>
             {
-                new Produit { NomProduit = "Produit1", Description = "Desc1", IdMarque = 1, IdTypeProduit = 1 },
-                new Produit { NomProduit = "Produit2", Description = "Desc2", IdMarque = 2, IdTypeProduit = 2 }
+                new Produit { IdProduit = 1, NomProduit = "Produit1", NomMarque = "Lenovo", NomTypeProduit = "Ideapad" },
+                new Produit { IdProduit = 2, NomProduit = "Produit2", NomMarque = "Samsung", NomTypeProduit = "Galaxy A51" }
             };
 
             produitServiceMock.Setup(service => service.GetItemsAsync())
@@ -67,20 +67,20 @@ namespace BUnitTests
             // Vérifier les données de la première ligne
             rows[0].MarkupMatches(@"
                 <tr>
+                    <td>1</td>
                     <td>Produit1</td>
-                    <td>Desc1</td>
-                    <td>1</td>
-                    <td>1</td>
+                    <td>Lenovo</td>
+                    <td>Ideapad</td>
                 </tr>
             ");
 
             // Vérifier les données de la deuxième ligne
             rows[1].MarkupMatches(@"
                 <tr>
+                    <td>2</td>
                     <td>Produit2</td>
-                    <td>Desc2</td>
-                    <td>2</td>
-                    <td>2</td>
+                    <td>Samsung</td>
+                    <td>Galaxy A51</td>
                 </tr>
             ");
         }
