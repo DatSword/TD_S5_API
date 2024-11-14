@@ -24,7 +24,7 @@ namespace TD1.Models.DataManager
                 {
                     IdTypeProduit = t.IdTypeProduit,
                     NomTypeProduit = t.NomTypeProduit,
-                    NbProduits = t.Produits.Count() // Comptage des produits associés
+                    NbProduits = t.Produits.Count()
                 })
                 .ToListAsync();
 
@@ -68,7 +68,6 @@ namespace TD1.Models.DataManager
 
             await produitsDBContext.SaveChangesAsync();
         }
-
 
         public async Task DeleteAsync(TypeProduit typeProduit)
         {

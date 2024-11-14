@@ -19,21 +19,24 @@ namespace TD1.Models.DataManager
             _mapper = mapper;
         }
 
+        //Récupération de tous les produitDTOs pour l'aperçu global
         public async Task<ActionResult<IEnumerable<ProduitDto>>> GetAllAsync()
         {
             var produits = await produitsDBContext.Produits
-                              .Include(p => p.IdtypeProduitNavigation) // Inclus les relations pour le mapping
+                              .Include(p => p.IdtypeProduitNavigation)
                               .Include(p => p.IdMarqueNavigation)
                               .ToListAsync();
 
             return _mapper.Map<List<ProduitDto>>(produits);
         }
 
+        //Récupération du produit brut pour les tests
         public async Task<ActionResult<Produit>> GetEntityByIdAsync(int id)
         {
             return await produitsDBContext.Produits.FirstOrDefaultAsync(p => p.IdProduit == id);
         }
 
+        //Récupération de tous les ProduitDetailDto pour un affichage individuel détaillé.
         public async Task<ActionResult<ProduitDetailDto>> GetEntityDtoByIdAsync(int id)
         {
             var produit = await produitsDBContext.Produits
